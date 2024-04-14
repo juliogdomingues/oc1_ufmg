@@ -6,7 +6,7 @@
 #
 
 vetor: .word 1 2 3 4 5 6 7 8 9 10
-
+vetor_negativo: .word -1, -2, -3, -4, -5, -6, -7, -8, -9, -10
 
 ##### R1 END MODIFIQUE AQUI END #####
 
@@ -26,11 +26,30 @@ teste2: la a0, vetor
         addi t0, zero, 3
         bne a0,t0, teste3
         addi s0,s0,1
-        #beq zero,zero,FIM
+        beq zero,zero,FIM
 
 ##### R2 START MODIFIQUE AQUI START #####
-# Testes próprios
 
+#multiplos: jalr zero, 0(ra)
+
+multiplos:
+        addi t1, zero, 0    # t1 é o contador de múltiplos
+        addi t2, zero, 0    # t2 é o índice atual no vetor
+        add t3, a0, zero    # Copia o endereço inicial de a0 para t3
+
+loop:   beq t2, a1, return  # Se t2 == a1, termina o loop
+        lw t4, 0(t3)        # Carrega o elemento atual do vetor em t4
+        addi t3, t3, 4      # Incrementa o ponteiro do vetor
+        rem t5, t4, a2      # t5 = t4 % a2
+        bnez t5, skip       # Se t5 != 0, pula para skip
+        addi t1, t1, 1      # Incrementa o contador t1
+skip:   addi t2, t2, 1      # Incrementa o índice t2
+        j loop              # Volta para o início do loop
+
+return: add a0, zero, t1    # Coloca o resultado em a0
+        jr ra               # Retorna para o endereço de retorno
+
+# Testes próprios (para rodar, comentar última linha dos testes originais)
 teste3: la a0, vetor
         addi a1, zero, 10
         addi a2, zero, 4
@@ -59,31 +78,37 @@ teste6:
         addi a2, zero, -2  
         jal ra, multiplos  
         addi t0, zero, 5   # Esperado: 5 múltiplos de -2
-        bne a0, t0, FIM
+        bne a0, t0, teste_negativo1
         addi s0, s0, 1
 
-#multiplos: jalr zero, 0(ra)
+# Testes com o vetor negativo
+teste_negativo1: la a0, vetor_negativo
+        addi a1, zero, 10
+        addi a2, zero, 2
+        jal ra, multiplos
+        addi t0, zero, 5   # Esperado: 5 múltiplos de 2
+        bne a0, t0, teste_negativo2
+        addi s0, s0, 1
 
-multiplos:
-        addi t1, zero, 0    # t1 é o contador de múltiplos
-        addi t2, zero, 0    # t2 é o índice atual no vetor
-        add t3, a0, zero    # Copia o endereço inicial de a0 para t3
+teste_negativo2: la a0, vetor_negativo
+        addi a1, zero, 10
+        addi a2, zero, 3
+        jal ra, multiplos
+        addi t0, zero, 3   # Esperado: 3 múltiplos de 3
+        bne a0, t0, teste_vazio
+        addi s0, s0, 1
 
-loop:   beq t2, a1, return  # Se t2 == a1, termina o loop
-        lw t4, 0(t3)        # Carrega o elemento atual do vetor em t4
-        addi t3, t3, 4      # Incrementa o ponteiro do vetor
-        rem t5, t4, a2      # t5 = t4 % a2
-        bnez t5, skip       # Se t5 != 0, pula para skip
-        addi t1, t1, 1      # Incrementa o contador t1
-skip:   addi t2, t2, 1      # Incrementa o índice t2
-        j loop              # Volta para o início do loop
-
-return: add a0, zero, t1    # Coloca o resultado em a0
-        jr ra               # Retorna para o endereço de retorno
-
-
+# Teste com "vetor vazio"
+teste_vazio:
+		la a0, vetor
+        li a1, 0   # Tamanho do vetor é 0
+        li a2, 1   # Divisor não é relevante, pois não há elementos
+        jal ra, multiplos
+        li t0, 0   # Esperado: 0 múltiplos
+        bne a0, t0, FIM
+        addi s0, s0, 1
+        beq zero,zero,FIM
 
 ##### R2 END MODIFIQUE AQUI END #####
 
 FIM: addi t0, s0, 0
-
