@@ -1,0 +1,13 @@
+Julio Guerra Domingues
+2022431280
+
+Para compilar o simulador, utilize o compilador C++ "g++", contido na GNU Compiler Collection.
+O processo de compilação está automatizado por meio do "make", que gerencia a criação e organização dos arquivos.
+A execução do simulador pode ser feita com o seguinte comando no terminal: ./bin/simulador <tamanho_cache> <tamanho_linha> <associatividade> <arquivo_entrada>
+O resultado da execução será salvo no arquivo output.txt, localizado no diretório raiz do projeto, conforme instruções.
+"make clean" remove os arquivos gerados durante a compilação, incluindo a pasta obj e o binário principal.
+
+Principais decisões de implementação:
+O índice do conjunto é calculado diretamente dos bits do endereço de memória que representam o índice, considerando a organização da cache.
+A tag é derivada eliminando os bits referentes ao deslocament.o dentro da linha. O formato hexadecimal é mantido consistente, visando a facilidade na interpretação dos resultados.
+No teste 4 fornecido, não há espaçamento antes do "#hits: 1". Considerei que isso é um erro do arquivo de exemplo, pois todos os outros arquivos incluem essa linha de distância.
